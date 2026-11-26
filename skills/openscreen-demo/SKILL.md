@@ -14,7 +14,7 @@ This skill carries the whole job on its own. Where this plugin's other skills ar
 
 ## 1. Set up OpenScreen
 
-You need the tools `startRecording`, `stopRecording`, `exportVideo` and `getFrames`. Both of OpenScreen's MCP servers have them: the one the app serves (*AI settings* → *MCP server*), and `openscreen mcp`. This edition of the plugin carries the skills only. If you have the tools, go to step 2. If you do not, OpenScreen is not connected to this agent: say so in plain words, link the user to OpenScreen's guide, https://getopenscreen.com/docs/ai-editing, and stop. Never install anything or change the agent's settings for it yourself. Tools added during a session load only in a new one.
+You need the tools `startRecording`, `stopRecording`, `exportVideo` and `getFrames`. This edition of the plugin carries the skills only. If you have the tools, go to step 2. If you do not, OpenScreen's tools are not available in this session: say so in plain words, point the user to OpenScreen's documentation, https://getopenscreen.com/docs/ai-editing, and stop. Never install anything or change the agent's settings for it yourself. Tools added during a session load only in a new one.
 
 **Permissions.**
 - **macOS:** the app that runs the agent needs, in System Settings → Privacy & Security, the Screen Recording permission to record at all, and the Accessibility permission for OpenScreen to record the pointer's clicks and shapes. Without Accessibility a take driven with the real mouse gets no zoom on its clicks: grant it, or hand the clicks over with `setPointerTrack` as for a scripted take.
@@ -22,7 +22,7 @@ You need the tools `startRecording`, `stopRecording`, `exportVideo` and `getFram
 
 **Hand over to the next session.** Write the user's request, and anything already decided, to `openscreen-demo-plan.md` in the working directory. Then ask the user to start a new session and say *continue the OpenScreen demo*. In that session, read the file and carry on from step 2.
 
-The tools are missing right after the plugin, the app or the server is added: an agent loads its MCP servers when a session starts. Say so in plain words; when a reload is not possible, hand over as above, with the storyboard in the file if you have made one. Never stand in for the missing tools by driving OpenScreen's window with computer use or a mouse tool: it takes over the user's mouse and screen while they may be working.
+When the tools are missing, say so in plain words and stop, as above. Never stand in for the missing tools by driving OpenScreen's window with computer use or a mouse tool: it takes over the user's mouse and screen while they may be working.
 
 ## 2. Plan before recording
 
@@ -44,6 +44,8 @@ Write a storyboard as a short table and show it to the user, then carry on unles
 
 ## 3. Set the stage
 
+**A web app captured headless** (frame by frame, so no window opens on the desktop) needs a capture script that this edition of the plugin does not carry. Say so, and ask the user whether a recording in a real window, which shows the page on their screen, will do. Stage and record it as below only once they agree.
+
 - Start the app and open it on the starting state of the first beat.
 - Give it one clean window of about 1600×1000. For a web app, open it in an app window without browser chrome: `chrome --app=http://localhost:3000 --window-size=1600,1000 --user-data-dir=<temp folder>`. Its title is the page's `<title>`.
 - Call `listSources` and pick a unique part of the window's title.
@@ -61,11 +63,9 @@ For staging, choreography and a take recorded with no window at all, use the `op
 - **Real mouse** (computer-use, or any tool that moves the actual pointer): OpenScreen records the pointer, draws a clean cursor and already zooms on the clicks. If your mouse tool cannot click in the app's window (some only read browsers, for one), drive it from a script instead.
 - **A script** (Playwright, CDP): the screen pointer never moves, so the take has no cursor and no zoom. In the script, log every action as it runs: `at` is `Date.now()`, `x` and `y` are the action's position as fractions of the window, `click` is true for a click. Hand the log to `setPointerTrack` after `stopRecording`; its description gives the formula from a page's coordinates. A script also gives the cleanest take: same timing on every run, no hesitation.
 
-**The user records the take themselves** from the recording bar: connected to the server in the app, call `waitForRecording` while it records. It never starts or stops anything; it returns once the user has stopped and the editor has saved the take, with the same fields as `stopRecording`. Set `timeoutSec` (default 300, at most 3600) and your client's tool-call timeout longer than the take. A timeout only ends the wait: call it again while the take runs. `openscreen mcp` cannot see the recording bar.
-
+**The user records the take themselves** from the recording bar: connected to the server in the app, call `waitForRecording` while it records. It never starts or stops anything; it returns once the user has stopped and the editor has saved the take, with the same fields as `stopRecording`. Set `timeoutSec` (default 300, at most 3600) and your client's tool-call timeout longer than the take. A timeout only ends the wait: call it again while the take runs. 
 **A video you already have** needs no recording: `createProject` with its absolute `videoPath` lays it out as a project, and returns a `projectId` and a `checkpointId` as `stopRecording` does. Check it as a take in step 5, its `videoPath` included, then go on from step 6.
 
-**A web app captured headless** (frame by frame, so no window opens on the desktop) needs the capture script of the full OpenScreen plugin, from https://github.com/getopenscreen/openscreen (see its `plugin/` folder). Without it, record the page in a real window as above.
 
 ## 5. Check the take
 
@@ -73,7 +73,7 @@ For staging, choreography and a take recorded with no window at all, use the `op
 
 ## 6. Edit
 
-Use the document tools, always with the `projectId`. Read the project first with `getCurrentDocument`: its notes say which times are in the recording's seconds and which on the editor's ruler. Checkpoints live in the server's memory: in a new session, or a new `openscreen mcp` process, call `createCheckpoint` before editing a project that is not open in the editor.
+Use the document tools, always with the `projectId`. Read the project first with `getCurrentDocument`: its notes say which times are in the recording's seconds and which on the editor's ruler. Checkpoints live in the server's memory: in a new session, or a new server process, call `createCheckpoint` before editing a project that is not open in the editor.
 
 **One clock.** Place every effect in ruler seconds, and look at the result with `getFrames` and the `projectId`, which takes the same seconds. Never read times off the exported file: a cut or a speed-up shifts its clock away from the ruler.
 

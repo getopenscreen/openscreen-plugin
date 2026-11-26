@@ -2,7 +2,7 @@
 
 This plugin turns one sentence into a finished demo video of an app or a feature. Its skills have Claude plan a short storyboard, record the screen with [OpenScreen](https://getopenscreen.com), add zooms, captions and on-screen callouts, export an MP4, check the frames, and then either attach the video to a pull request or draft a post on X.
 
-OpenScreen is a free, open-source (MIT) screen recorder and video editor for Windows, macOS and Linux. This edition of the plugin carries the skills. The recording and editing tools come from OpenScreen's MCP server, which is the desktop app's own executable started with `mcp`. [OpenScreen's guide](https://getopenscreen.com/docs/ai-editing) explains how to connect it to your agent.
+OpenScreen is a free, open-source (MIT) screen recorder and video editor for Windows, macOS and Linux. This edition of the plugin carries the skills. The recording and editing tools come from the OpenScreen desktop app; this edition does not add them to your agent. [OpenScreen's documentation](https://getopenscreen.com/docs/ai-editing) covers its AI editing.
 
 ## The skills
 
@@ -16,13 +16,13 @@ OpenScreen is a free, open-source (MIT) screen recorder and video editor for Win
 
 ## What the plugin runs, sends and fetches
 
-- **Uses OpenScreen's MCP server when it is connected.** The skills install nothing and change no settings: if the tools are missing, Claude says so and links to OpenScreen's guide. The server runs locally and needs no account.
+- **Uses OpenScreen's tools when the agent already has them.** The skills install nothing and change no settings: if the tools are missing, Claude says so and links to OpenScreen's documentation. Nothing needs an account.
 - **Records the window you choose.** The recording and the project stay on your machine. The exported video leaves it only when you share it, as below.
 - **Attaches the video to a pull request** with `gh`, on the repository you work in, when you ask for a pull request video.
 - **Drafts a post on X** for a launch demo, and posts it only after your explicit yes.
 
 ## Use it
 
-Install it from Claude's plugin directory and connect OpenScreen as [its guide](https://getopenscreen.com/docs/ai-editing) explains. Then ask Claude for a demo, for example: *make a 30-second demo of the new export dialog and add it to my PR*.
+Install it from Claude's plugin directory. With OpenScreen's tools available to Claude, ask Claude for a demo, for example: *make a 30-second demo of the new export dialog and add it to my PR*.
 
 Documentation: [Letting an agent make the whole video](https://getopenscreen.com/docs/ai-editing/#letting-an-agent-make-the-whole-video).

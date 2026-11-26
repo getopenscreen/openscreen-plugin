@@ -7,13 +7,15 @@ description: Gets a clean, repeatable take for an OpenScreen video. Covers stagi
 
 A take is cheaper to redo than to repair. Aim for one that needs no cut: the first frame already shows the result, every action happens once, and every result stays on screen about 1 s before the next action.
 
+This edition of the plugin carries the skills only. If `startRecording` and OpenScreen's other tools are not in your tool list, they are not available in this session: say so in plain words, point the user to OpenScreen's documentation, https://getopenscreen.com/docs/ai-editing, and stop. Never install anything or change the agent's settings for it yourself.
+
 ## Choose how to capture
 
 | Situation | Capture | Cursor and zooms |
 |---|---|---|
 | A desktop app, a native window, anything a browser cannot show | `startRecording`, real mouse | Recorded with the take |
 | A web app the user wants filmed as they use it | `startRecording`, real mouse | Recorded with the take |
-| A web app, a repeatable take, nothing on the user's screen | A headless script, with the full plugin (below) | `setPointerTrack` from the script's log |
+| A web app, a repeatable take, nothing on the user's screen | Not in this edition (below) | `setPointerTrack` from the script's log |
 | A web app shown in a real window, driven by Playwright or CDP | `startRecording`, script drives the page | `setPointerTrack` from the script's log |
 | A video file that already exists | `createProject` with its `videoPath` | `setPointerTrack` if you know the clicks |
 
@@ -62,7 +64,7 @@ For a page shown in a real window, the tool's description gives the formula from
 
 ## The headless recipe
 
-Capturing a web page in a browser with no window needs a capture script that comes with the full OpenScreen plugin, from https://github.com/getopenscreen/openscreen (see its `plugin/` folder). Without it, record the page in a real window with `startRecording` as above.
+Capturing a web page in a browser with no window needs a capture script that this edition of the plugin does not carry. Say so, and ask the user whether a recording in a real window, which shows the page on their screen, will do. Record it with `startRecording` as above only once they agree.
 
 ## Check the take before editing
 
