@@ -13,12 +13,11 @@ A take is cheaper to redo than to repair. Aim for one that needs no cut: the fir
 |---|---|---|
 | A desktop app, a native window, anything a browser cannot show | `startRecording`, real mouse | Recorded with the take |
 | A web app the user wants filmed as they use it | `startRecording`, real mouse | Recorded with the take |
-| A web app, a repeatable take, nothing on the user's screen | Headless script (below) | `setPointerTrack` from the script's log |
+| A web app, a repeatable take, nothing on the user's screen | A headless script, with the full plugin (below) | `setPointerTrack` from the script's log |
 | A web app shown in a real window, driven by Playwright or CDP | `startRecording`, script drives the page | `setPointerTrack` from the script's log |
 | A video file that already exists | `createProject` with its `videoPath` | `setPointerTrack` if you know the clicks |
 
-**Prefer a real recording** when the thing to show is not a web page, needs the user's real data or session, involves sound from the app (`startRecording` with `systemAudio: true`), needs the webcam (`camera`) or a narration (`microphone: true`), or when the user wants to drive it themselves. Everything else in a browser is cleaner headless: same timing on every run, no hesitation, the user's screen untouched.
-
+**Prefer a real recording** when the thing to show is not a web page, needs the user's real data or session, involves sound from the app (`startRecording` with `systemAudio: true`), needs the webcam (`camera`) or a narration (`microphone: true`), or when the user wants to drive it themselves. 
 ## Stage the app
 
 - **One clean state per beat.** Seed believable sample data before the take: a short input that fits the view, a list with five to ten realistic rows. Never real customer data, secrets, tokens, real names or personal notifications.
@@ -63,24 +62,7 @@ For a page shown in a real window, the tool's description gives the formula from
 
 ## The headless recipe
 
-`scripts/capture.mjs` captures a web page in a browser with no window: a screenshot loop at twice the display scale (2560×1440 from a 1280×720 viewport, about 20 frames a second, enough for an interface), encoded to an H.264 MP4 at 30 fps, plus the pointer log in video time. Twice the scale is what keeps text sharp under a 1.5× to 2.2× zoom.
-
-**Requirements.** Node 18 or later; Playwright (`playwright` or `playwright-core`) installed where the script can find it; ffmpeg on the PATH; Chrome, Edge or Playwright's own Chromium. The script checks each one and says what is missing. Install nothing without the user's agreement; ask, then for instance `npm install --no-save playwright` in the working directory, or `npx playwright install chromium` when no Chrome or Edge is installed.
-
-**Run it**, from the working directory:
-
-1. Write a storyboard module next to the take, starting from `scripts/storyboard.example.mjs` (read it: 24 lines). It exports `url`, optionally `viewport`, `scale`, `colorScheme`, `prepare(page)` (sets up the first beat before capture starts) and `run(s)`. In `run`, use `s.move(x, y, ms)`, `s.moveTo(selector, ms)`, `s.click()`, `s.type(text, msPerChar)` and `s.wait(ms)`; `s.page` is the Playwright page for anything else. Click with `s.click()`, never `page.click()`: only `s` logs the pointer.
-2. `node <skill dir>/scripts/capture.mjs storyboard.mjs <dir>/take.mp4`. It prints the duration, the captured frame rate and the second of each click, and writes `take.mp4` and `take.mp4.pointer.json`.
-3. `createProject` with the take's absolute `videoPath` and a `title`. Keep `projectId` and `checkpointId`.
-4. `setPointerTrack` with the `projectId` and the `recordingStartedAt` and `events` from `take.mp4.pointer.json`, passed as they are.
-5. Check the take (below), then edit as the `openscreen-demo` skill says.
-
-Never write a `.cursor.json` file yourself: `setPointerTrack` writes it, and a checkpoint keeps the old one.
-
-**Pitfalls.**
-- A captured frame rate under 12 means the page is heavy: lower `scale` to 1.5 or shorten the take.
-- Timers inside the page run on the real clock while frames arrive at their own pace: an on-screen clock or counter can look faster or slower than real time. Keep them out of the shot.
-- A 3× scale (3840×2160) is worth it only for an effect that magnifies a detail, and costs frame rate.
+Capturing a web page in a browser with no window needs a capture script that comes with the full OpenScreen plugin, from https://github.com/getopenscreen/openscreen (see its `plugin/` folder). Without it, record the page in a real window with `startRecording` as above.
 
 ## Check the take before editing
 

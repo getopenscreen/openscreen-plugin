@@ -14,16 +14,13 @@ This skill carries the whole job on its own. Where this plugin's other skills ar
 
 ## 1. Set up OpenScreen
 
-You need the tools `startRecording`, `stopRecording`, `exportVideo` and `getFrames`. Both of OpenScreen's MCP servers have them: the one the app serves (*AI settings* → *MCP server*), and `openscreen mcp`. With the OpenScreen plugin installed in Claude Code, `openscreen mcp` is already connected: the plugin starts it through a small launcher (Node) that finds the installed app. If you have the tools, go to step 2.
+You need the tools `startRecording`, `stopRecording`, `exportVideo` and `getFrames`. Both of OpenScreen's MCP servers have them: the one the app serves (*AI settings* → *MCP server*), and `openscreen mcp`. This edition of the plugin carries the skills only, so the server is registered once, by hand. If you have the tools, go to step 2. Otherwise they are missing for one of these reasons, so do only what is missing:
 
-If you have only the tool `openscreenSetup`, the plugin's launcher is running but did not find a usable app: call it, and it says why and which locations it checked. Otherwise the tools are missing for one of these reasons, so do only what is missing:
+- **The app is missing or too old:** install it as below.
+- **The server is not registered:** register it as below.
+- **The server was just registered:** its tools load in a new session.
 
-- **The plugin was just installed:** its server connects after `/reload-plugins` or in a new session.
-- **The app is missing or too old** (`openscreenSetup` says so): install it as below, then `/reload-plugins`.
-- **Node is not installed,** so the launcher cannot run: register the server by hand, as below.
-- **The agent has no plugin support,** or you work in Codex, Cursor or another agent: register the server by hand, as below.
-
-**The app.** Its executable is the MCP server. The launcher checks these locations, and the environment variable `OPENSCREEN_EXE` overrides them:
+**The app.** Its executable is the MCP server. Look for it in these locations:
 
 | OS | Executable |
 |---|---|
@@ -38,11 +35,11 @@ Check every location in the table before you call OpenScreen missing: the Store 
    - **Windows:** the Microsoft Store (`winget install --source msstore OpenScreen`), or the `Openscreen.Setup.<version>.exe` installer, run with `/S /currentuser` for a silent install for the current user.
    - **Linux:** the `.deb`, `.rpm` or `.pacman` for the distribution, or the `.AppImage` made executable.
 2. Check `help` again. If even the latest release does not list `mcp`, this OpenScreen feature is not released yet: say so and stop.
-3. With the plugin, run `/reload-plugins` or start a new session: the launcher now finds the app.
+3. Register the server as below if it is not registered yet, then start a new session.
 
-**The MCP server by hand,** only without the plugin's server: add it to the agent, then the tools load in the next session.
+**The MCP server.** Add it to the agent with the user's agreement, then the tools load in the next session.
 
-- **Claude Code:** `claude mcp add openscreen -- "<executable>" mcp`. Not alongside the plugin's server, which would give you every tool twice.
+- **Claude Code:** `claude mcp add openscreen -- "<executable>" mcp`.
 - **Codex:** `codex mcp add openscreen -- "<executable>" mcp`
 - **Cursor and others:** a stdio server with the executable as `command` and `["mcp"]` as `args`.
 
@@ -52,7 +49,7 @@ Check every location in the table before you call OpenScreen missing: the Store 
 
 **Hand over to the next session.** Write the user's request, and anything already decided, to `openscreen-demo-plan.md` in the working directory. Then ask the user to start a new session and say *continue the OpenScreen demo*. In that session, read the file and carry on from step 2.
 
-The tools are missing right after the plugin, the app or the server is added: an agent loads its MCP servers when a session starts, or in Claude Code on `/reload-plugins`. Say so in plain words; when a reload is not possible, hand over as above, with the storyboard in the file if you have made one. Never stand in for the missing tools by driving OpenScreen's window with computer use or a mouse tool: it takes over the user's mouse and screen while they may be working.
+The tools are missing right after the plugin, the app or the server is added: an agent loads its MCP servers when a session starts. Say so in plain words; when a reload is not possible, hand over as above, with the storyboard in the file if you have made one. Never stand in for the missing tools by driving OpenScreen's window with computer use or a mouse tool: it takes over the user's mouse and screen while they may be working.
 
 ## 2. Plan before recording
 
@@ -95,7 +92,7 @@ For staging, choreography and a take recorded with no window at all, use the `op
 
 **A video you already have** needs no recording: `createProject` with its absolute `videoPath` lays it out as a project, and returns a `projectId` and a `checkpointId` as `stopRecording` does. Check it as a take in step 5, its `videoPath` included, then go on from step 6.
 
-**A web app captured headless** (frame by frame, so no window opens on the desktop): the `openscreen-capture` skill ships a script that does it at twice the display scale and writes the pointer log. Then `createProject` with the video, and `setPointerTrack` with `recordingStartedAt: 0` and each `at` in milliseconds into the video.
+**A web app captured headless** (frame by frame, so no window opens on the desktop) needs the capture script of the full OpenScreen plugin, from https://github.com/getopenscreen/openscreen (see its `plugin/` folder). Without it, record the page in a real window as above.
 
 ## 5. Check the take
 
