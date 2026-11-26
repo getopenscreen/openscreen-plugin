@@ -14,34 +14,7 @@ This skill carries the whole job on its own. Where this plugin's other skills ar
 
 ## 1. Set up OpenScreen
 
-You need the tools `startRecording`, `stopRecording`, `exportVideo` and `getFrames`. Both of OpenScreen's MCP servers have them: the one the app serves (*AI settings* → *MCP server*), and `openscreen mcp`. This edition of the plugin carries the skills only, so the server is registered once, by hand. If you have the tools, go to step 2. Otherwise they are missing for one of these reasons, so do only what is missing:
-
-- **The app is missing or too old:** install it as below.
-- **The server is not registered:** register it as below.
-- **The server was just registered:** its tools load in a new session.
-
-**The app.** Its executable is the MCP server. Look for it in these locations:
-
-| OS | Executable |
-|---|---|
-| Windows | `%LOCALAPPDATA%\Programs\Openscreen\Openscreen.exe`, or `C:\Program Files\Openscreen\Openscreen.exe`. The Microsoft Store version (2.2.0 and later): the execution alias `openscreen`, which is `%LOCALAPPDATA%\Microsoft\WindowsApps\openscreen.exe` (`where openscreen`). Failing that, `app\Openscreen.exe` under `(Get-AppxPackage EtienneLescot.OpenScreen).InstallLocation` (in PowerShell); that path carries the version, so register it again after a Store update. Never wrap it in a `powershell -Command` launcher: PowerShell swallows the server's input after the first message |
-| macOS | `/Applications/Openscreen.app/Contents/MacOS/Openscreen`, or the same under `~/Applications` |
-| Linux | `openscreen` on the PATH (`.deb`, `.rpm`, `.pacman`, Nix), `/opt/Openscreen/openscreen`, or an `Openscreen-Linux-<version>.AppImage` in `~/Applications`, `~/Downloads` or the home folder |
-
-Check every location in the table before you call OpenScreen missing: the Store version is the one most often overlooked. Run `"<executable>" help`: it must list `mcp`, which arrived in 2.1.0. If the app is missing, or too old to list it, offer to install the latest release, and do it only once the user agrees:
-
-1. Find the installer for this machine in the latest release of `getopenscreen/openscreen`: `gh release view --repo getopenscreen/openscreen --json assets`, or https://github.com/getopenscreen/openscreen/releases/latest.
-   - **macOS:** `Openscreen-macOS-Apple-Silicon-<version>.dmg`, or `-Intel-` (check `uname -m`). Mount it, copy `Openscreen.app` to `/Applications`, unmount it.
-   - **Windows:** the Microsoft Store (`winget install --source msstore OpenScreen`), or the `Openscreen.Setup.<version>.exe` installer, run with `/S /currentuser` for a silent install for the current user.
-   - **Linux:** the `.deb`, `.rpm` or `.pacman` for the distribution, or the `.AppImage` made executable.
-2. Check `help` again. If even the latest release does not list `mcp`, this OpenScreen feature is not released yet: say so and stop.
-3. Register the server as below if it is not registered yet, then start a new session.
-
-**The MCP server.** Add it to the agent with the user's agreement, then the tools load in the next session.
-
-- **Claude Code:** `claude mcp add openscreen -- "<executable>" mcp`.
-- **Codex:** `codex mcp add openscreen -- "<executable>" mcp`
-- **Cursor and others:** a stdio server with the executable as `command` and `["mcp"]` as `args`.
+You need the tools `startRecording`, `stopRecording`, `exportVideo` and `getFrames`. Both of OpenScreen's MCP servers have them: the one the app serves (*AI settings* → *MCP server*), and `openscreen mcp`. This edition of the plugin carries the skills only. If you have the tools, go to step 2. If you do not, OpenScreen is not connected to this agent: say so in plain words, link the user to OpenScreen's guide, https://getopenscreen.com/docs/ai-editing, and stop. Never install anything or change the agent's settings for it yourself. Tools added during a session load only in a new one.
 
 **Permissions.**
 - **macOS:** the app that runs the agent needs, in System Settings → Privacy & Security, the Screen Recording permission to record at all, and the Accessibility permission for OpenScreen to record the pointer's clicks and shapes. Without Accessibility a take driven with the real mouse gets no zoom on its clicks: grant it, or hand the clicks over with `setPointerTrack` as for a scripted take.
@@ -145,7 +118,7 @@ Keep the rest as it is: the background, padding, shadow and cursor style are cho
 
 While you edit, you can call `getFrames` and `getContactSheet` with the `projectId` before exporting: without a current export they render the frames the export would show.
 
-If a tool named here is not in your tool list (`getContactSheet`, `getAudioReport`, or `region`, `startSec` and `endSec` on `getFrames`), the installed OpenScreen is older than this skill: offer to update it as in step 1, or fall back to `getFrames` with `atSec`.
+If a tool named here is not in your tool list (`getContactSheet`, `getAudioReport`, or `region`, `startSec` and `endSec` on `getFrames`), the installed OpenScreen is older than this skill: ask the user to quit OpenScreen, install the latest one over it, as https://getopenscreen.com/docs/installation explains, then to start a new session, or fall back to `getFrames` with `atSec`.
 
 ## 8. Deliver
 
